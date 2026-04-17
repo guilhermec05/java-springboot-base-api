@@ -1,0 +1,29 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: basic_api
+  datasource:
+    url: jdbc:postgresql://localhost:5435/test_java_db?createDatabaseIfNotExist=true
+    username: postgres
+    password: 12345678
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: docs
+    tagsSorter: alpha
+    display-request-duration: true
+    doc-expansion: none
+    try-it-out-enabled: true
+    operations-sorter: alpha
+  paths-to-match: /users/**

@@ -73,6 +73,8 @@ public class UserServiceTest {
 
         assertEquals(userResponseList1.size(),2);
 
+        verify(repository,times(1)).findAll(peage);
+
     }
 
 

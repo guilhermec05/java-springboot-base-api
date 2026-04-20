@@ -7,6 +7,7 @@ import br.com.cabral.basic_api.domain.dto.users.UserUpdateRequest;
 import br.com.cabral.basic_api.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -48,7 +49,7 @@ public class UserController {
 
     @PostMapping
     @Operation(summary = "Criar os usuários")
-    public  ResponseEntity<UserResponse> createUser(@RequestBody UserCreateRequest userBody){
+    public  ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreateRequest userBody){
         UserResponse user = userService.createUser(userBody);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
@@ -56,7 +57,7 @@ public class UserController {
     @PutMapping("{id}")
     @Operation(summary = "Atualizar os usuários")
     public  ResponseEntity<UserResponse> update(@PathVariable Long id,
-                                                @RequestBody UserUpdateRequest userBody){
+                                                @Valid @RequestBody UserUpdateRequest userBody){
         UserResponse user = userService.updateUser(id,userBody);
 
         if(user == null ){

@@ -3,6 +3,7 @@ package br.com.cabral.basic_api.service;
 
 import br.com.cabral.basic_api.domain.dto.users.UserCreateRequest;
 import br.com.cabral.basic_api.domain.dto.users.UserResponse;
+import br.com.cabral.basic_api.domain.dto.users.UserUpdateRequest;
 import br.com.cabral.basic_api.domain.entity.User;
 import br.com.cabral.basic_api.repository.UserRepository;
 import br.com.cabral.basic_api.service.impl.UserServiceImpl;
@@ -15,8 +16,10 @@ import org.springframework.data.domain.Pageable;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static  org.mockito.Mockito.*;
 
 
@@ -78,5 +81,27 @@ public class UserServiceTest {
     }
 
 
+    @Test
+    void validationUpdateService(){
+        UserUpdateRequest userUpdateRequest  = new UserUpdateRequest();
+        userUpdateRequest.Email = "teste@test.com";
+        userUpdateRequest.Name = "test";
+
+        User user = new User();
+        user.setId(1L);
+        user.setName( userUpdateRequest.Name);
+        user.setEmail(userUpdateRequest.Email );
+
+
+        when(repository.findById(1L)).thenReturn(Optional.of(user));
+        when(repository.save(any(User.class))).thenReturn(user);
+
+        var response = userService.updateUser(Long.parseLong("1") ,userUpdateRequest);
+
+        assertNotNull(response);
+        assertEquals(response.Id,1L);
+        assertEquals(response.Name, userUpdateRequest.Name);
+        assertEquals(response.Email,userUpdateRequest.Email);
+    }
 
 }

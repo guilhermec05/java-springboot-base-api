@@ -2,8 +2,10 @@ package br.com.cabral.basic_api.controller;
 
 import br.com.cabral.basic_api.domain.dto.users.UserCreateRequest;
 import br.com.cabral.basic_api.domain.dto.users.UserResponse;
+import br.com.cabral.basic_api.domain.entity.User;
 import br.com.cabral.basic_api.service.UserService;
 import br.com.cabral.basic_api.service.impl.UserServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,7 +30,7 @@ public class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
-    private final  ObjectMapper objectMapper = new ObjectMapper();;
+    private final  ObjectMapper objectMapper = new ObjectMapper();
 
     public  UserControllerTest(){
         MockitoAnnotations.openMocks(this);
@@ -56,5 +58,59 @@ public class UserControllerTest {
 
 
 
+    }
+
+
+    @Test
+    void validationFormCreate() throws Exception {
+        UserCreateRequest user = new UserCreateRequest();
+        user.Name = "teste";
+        user.Email = "tes";
+
+        UserResponse userResponse = new UserResponse();
+
+        userResponse.Id = 1L;
+        userResponse.Name = user.Name;
+        userResponse.Email = user.Email;
+
+        when(userService.createUser(any())).thenReturn(userResponse);
+
+
+        mockMvc.perform(post("/users")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(user))
+        ).andExpect(status().isBadRequest());
+
+
+
+        user.Name = "";
+        user.Email = "test@teste.com";
+
+
+        mockMvc.perform(post("/users")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(user))
+        ).andExpect(status().isBadRequest());
+
+
+
+        user.Name = "teste";
+        user.Email = "";
+
+
+        mockMvc.perform(post("/users")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(user))
+        ).andExpect(status().isBadRequest());
+
+
+        user.Name = "";
+        user.Email = "";
+
+
+        mockMvc.perform(post("/users")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(user))
+        ).andExpect(status().isBadRequest());
     }
 }

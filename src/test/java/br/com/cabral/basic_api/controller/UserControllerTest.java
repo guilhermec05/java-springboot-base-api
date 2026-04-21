@@ -1,5 +1,6 @@
 package br.com.cabral.basic_api.controller;
 
+import br.com.cabral.basic_api.configuration.security.JwtService;
 import br.com.cabral.basic_api.domain.dto.users.UserCreateRequest;
 import br.com.cabral.basic_api.domain.dto.users.UserResponse;
 import br.com.cabral.basic_api.domain.entity.User;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,6 +30,12 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+
+    @Autowired
+    private JwtService jwtService;
+
+
+
     @MockitoBean
     private UserService userService;
 
@@ -38,6 +47,9 @@ public class UserControllerTest {
 
     @Test
     void shouldCreatedUser() throws  Exception{
+
+        //String token = jwtService.generateToken("guilherme");
+
         UserCreateRequest userCreateRequest = new UserCreateRequest();
         userCreateRequest.Name = "Test";
         userCreateRequest.Email = "test@email.com";
@@ -52,8 +64,10 @@ public class UserControllerTest {
 
         mockMvc.perform(
           post("/users")
+                 // .header("Authorization","Bearer " +token)
                   .contentType("application/json")
                   .content(objectMapper.writeValueAsString(userResponse)))
+
                 .andExpect(status().isCreated())  ;
 
 
@@ -63,6 +77,9 @@ public class UserControllerTest {
 
     @Test
     void validationFormCreate() throws Exception {
+
+        String token = jwtService.generateToken("guilherme");
+
         UserCreateRequest user = new UserCreateRequest();
         user.Name = "teste";
         user.Email = "tes";
@@ -77,6 +94,7 @@ public class UserControllerTest {
 
 
         mockMvc.perform(post("/users")
+                .header("Authorization","Bearer " +token)
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(user))
         ).andExpect(status().isBadRequest());
@@ -99,6 +117,7 @@ public class UserControllerTest {
 
 
         mockMvc.perform(post("/users")
+                .header("Authorization","Bearer " +token)
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(user))
         ).andExpect(status().isBadRequest());
@@ -109,6 +128,7 @@ public class UserControllerTest {
 
 
         mockMvc.perform(post("/users")
+                .header("Authorization","Bearer " +token)
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(user))
         ).andExpect(status().isBadRequest());

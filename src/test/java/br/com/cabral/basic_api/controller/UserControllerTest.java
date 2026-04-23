@@ -31,10 +31,9 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
 
-    @Autowired
+
+    @MockitoBean
     private JwtService jwtService;
-
-
 
     @MockitoBean
     private UserService userService;
@@ -48,7 +47,6 @@ public class UserControllerTest {
     @Test
     void shouldCreatedUser() throws  Exception{
 
-        //String token = jwtService.generateToken("guilherme");
 
         UserCreateRequest userCreateRequest = new UserCreateRequest();
         userCreateRequest.Name = "Test";
@@ -60,13 +58,14 @@ public class UserControllerTest {
         userResponse.Name = "Test";
         userResponse.Email = "test@email.com";
 
+        when(jwtService.extractUsername(any())).thenReturn("Guilherme");
         when(userService.createUser(any())).thenReturn(userResponse);
 
         mockMvc.perform(
           post("/users")
-                 // .header("Authorization","Bearer " +token)
+                 .header("Authorization","Bearer " +"qualquer")
                   .contentType("application/json")
-                  .content(objectMapper.writeValueAsString(userResponse)))
+                  .content(objectMapper.writeValueAsString(userCreateRequest)))
 
                 .andExpect(status().isCreated())  ;
 
@@ -78,8 +77,6 @@ public class UserControllerTest {
     @Test
     void validationFormCreate() throws Exception {
 
-        String token = jwtService.generateToken("guilherme");
-
         UserCreateRequest user = new UserCreateRequest();
         user.Name = "teste";
         user.Email = "tes";
@@ -90,11 +87,14 @@ public class UserControllerTest {
         userResponse.Name = user.Name;
         userResponse.Email = user.Email;
 
+
+
         when(userService.createUser(any())).thenReturn(userResponse);
+        when(jwtService.extractUsername(any())).thenReturn("Guilherme");
 
 
         mockMvc.perform(post("/users")
-                .header("Authorization","Bearer " +token)
+                .header("Authorization","Bearer " +"akljslakjlsajsaj")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(user))
         ).andExpect(status().isBadRequest());
@@ -106,6 +106,7 @@ public class UserControllerTest {
 
 
         mockMvc.perform(post("/users")
+                .header("Authorization","Bearer " +"akljslakjlsajsaj")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(user))
         ).andExpect(status().isBadRequest());
@@ -117,7 +118,7 @@ public class UserControllerTest {
 
 
         mockMvc.perform(post("/users")
-                .header("Authorization","Bearer " +token)
+                .header("Authorization","Bearer " +"akljslakjlsajsaj")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(user))
         ).andExpect(status().isBadRequest());
@@ -128,7 +129,7 @@ public class UserControllerTest {
 
 
         mockMvc.perform(post("/users")
-                .header("Authorization","Bearer " +token)
+                .header("Authorization","Bearer " +"alksjdalkjlkasdjlkoken")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(user))
         ).andExpect(status().isBadRequest());

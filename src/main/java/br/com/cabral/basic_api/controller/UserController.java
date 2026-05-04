@@ -8,7 +8,7 @@ import br.com.cabral.basic_api.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,22 +16,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/users")
 @Tag(name = "Usuários", description = "Operações relacionada a usuários")
 public class UserController {
 
-    @Autowired
-    private  final UserServiceImpl userService;
-
-    public UserController(UserServiceImpl userService) {
-        this.userService = userService;
-    }
+    private final UserServiceImpl userService;
 
     @GetMapping()
     @Operation(summary = "Trazer todos os usuários")
     public ResponseEntity<List<UserResponse>> getUsers(Pageable pageable){
-
         List<UserResponse> userResponses = userService.listAll(pageable);
         return ResponseEntity.ok(userResponses);
 
@@ -41,9 +36,6 @@ public class UserController {
     @Operation(summary = "Trazer os usuários por id")
     public  ResponseEntity<UserResponse> getById(@PathVariable Long id){
         UserResponse user = userService.getById(id);
-        if(user == null ){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
         return  ResponseEntity.ok(user);
     }
 

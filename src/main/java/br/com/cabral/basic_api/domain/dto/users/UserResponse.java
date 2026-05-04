@@ -6,16 +6,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonPropertyOrder({ "id", "name", "email" })
-public class UserResponse {
+public record UserResponse (
 
+        @Schema(description = "id do usuário",example = "1")
+        @JsonProperty("id")
+        Long id,
 
-    @Schema(description = "id do usuário",example = "1")
-    @JsonProperty("id")
-    public Long Id;
-    @Schema(description = "Nome do usuário",example = "john armless")
-    @JsonProperty("name")
-    public String Name;
-    @Schema(description = "Email do usuário", example = "j.armless@email.com")
-    @JsonProperty("email")
-    public String Email;
-}
+        @Schema(description = "Nome do usuário",example = "john armless")
+        @JsonProperty("name")
+        String name,
+
+        @Schema(description = "Email do usuário", example = "j.armless@email.com")
+        @JsonProperty("email")
+        String email
+){}

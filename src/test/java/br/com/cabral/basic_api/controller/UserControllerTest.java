@@ -52,11 +52,12 @@ public class UserControllerTest {
         userCreateRequest.Name = "Test";
         userCreateRequest.Email = "test@email.com";
 
-        UserResponse userResponse = new UserResponse();
+        UserResponse userResponse = new UserResponse(
+                1L,
+                "Test",
+                "test@email.com"
 
-        userResponse.Id = 1L;
-        userResponse.Name = "Test";
-        userResponse.Email = "test@email.com";
+        );
 
         when(jwtService.extractUsername(any())).thenReturn("Guilherme");
         when(userService.createUser(any())).thenReturn(userResponse);
@@ -81,11 +82,11 @@ public class UserControllerTest {
         user.Name = "teste";
         user.Email = "tes";
 
-        UserResponse userResponse = new UserResponse();
-
-        userResponse.Id = 1L;
-        userResponse.Name = user.Name;
-        userResponse.Email = user.Email;
+        UserResponse userResponse = new UserResponse(
+                1L,
+                user.Name,
+                user.Email
+        );
 
 
 

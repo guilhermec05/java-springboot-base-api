@@ -4,25 +4,24 @@ import br.com.cabral.basic_api.domain.dto.users.UserCreateRequest;
 import br.com.cabral.basic_api.domain.dto.users.UserResponse;
 import br.com.cabral.basic_api.domain.dto.users.UserUpdateRequest;
 import br.com.cabral.basic_api.domain.entity.User;
+import br.com.cabral.basic_api.exception.UsuarioNaoEncontradoException;
 import br.com.cabral.basic_api.repository.UserRepository;
 import br.com.cabral.basic_api.service.impl.UserServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.cabral.basic_api.service.validacao.UserValidacao;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class UserService implements UserServiceImpl {
 
-    @Autowired
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserValidacao userValidacao;
 
     @Override
     public List<UserResponse> listAll(Pageable pageable) {
@@ -37,11 +36,13 @@ public class UserService implements UserServiceImpl {
     public UserResponse getById(long id) {
         return userRepository.findById(id)
                 .map(this::toResponse)
-                .orElse(null);
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuario não encontrado."));
     }
 
+    @Transactional
     @Override
     public UserResponse createUser(UserCreateRequest user) {
+        userValidacao.validaSeEmailExiste(user.Email);
         User userModel = new User();
         userModel.setName(user.Name);
         userModel.setEmail(user.Email);
@@ -49,6 +50,7 @@ public class UserService implements UserServiceImpl {
         return toResponse(saved);
     }
 
+    @Transactional
     @Override
     public UserResponse updateUser(Long id, UserUpdateRequest userUpdate) {
 
@@ -61,8 +63,7 @@ public class UserService implements UserServiceImpl {
 
     @Override
     public void deletedUser(Long id) {
-        User user = get(id);
-        userRepository.delete(user);
+        userRepository.deleteById(id);
     }
 
     private User get(Long id){
@@ -70,10 +71,10 @@ public class UserService implements UserServiceImpl {
     }
 
     private UserResponse toResponse(User user){
-        UserResponse userResponse = new UserResponse();
-        userResponse.Id = user.getId();
-        userResponse.Name =  user.getName();
-        userResponse.Email = user.getEmail();
-        return  userResponse;
+         return new UserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
     }
 }
